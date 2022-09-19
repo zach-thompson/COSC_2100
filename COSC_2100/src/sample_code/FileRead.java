@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class FileRead {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		File f1 = new File("infoo.txt");
+		File f1 = new File("info2.txt");
 		Scanner s1 = new Scanner(f1);
 		while(s1.hasNextLine())
 			System.out.println(s1.nextLine());
