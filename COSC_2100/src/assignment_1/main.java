@@ -8,23 +8,28 @@ package assignment_1;
 */
 
 import java.util.Scanner;
+import java.util.Stack;
 import java.io.*;
 
 public class main {
 	public static Scanner scan = new Scanner(System.in);
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Welcome to Zach's login simulator\n");
-		FileWriter userData = new FileWriter("userData.txt");
+		
+		FileWriter writeData = new FileWriter("userData.txt", true);
+		File userData = new File ("userData.txt");
 		
 		switch (getUserType()) { // calls getUserType which returns a 1 or 2
 		case 1:
-			login();
+			login(userData);
 			break;
 		case 2:
-			newUser();
+			newUser(writeData, userData);
 			break;
 		}
+		
+		writeData.close();
 		return;
 	}
 	
@@ -47,47 +52,66 @@ public class main {
 		return input;
 	}
 	
-	public static void login() {
-		// Check for existing user write to file
-		System.out.println("Username: ");
-		String username = scan.nextLine();
+	public static void login(File userData) throws FileNotFoundException {
+		boolean match = false;
 		
-		
-		
-		System.out.println("Password: ");
-		String password = scan.nextLine();
-		
+		while (match == false) {
+			System.out.print("Username: ");
+			String username = scan.next();
+			
+			while (scan.hasNextLine()) {
+				String temp = scan.next();			
+				if (temp == username) {
+					System.out.print("Password: ");
+					String password = scan.next();
+					temp = scan.next();			
+					if (temp == password) {
+						match = true;
+					}
+					else {
+						System.out.println("Username and password don't match. Please try again.\n");
+					}
+				}
+			}
+			if (match == false) {
+				System.out.println("Username not found. Please try again.\n");
+				}
+		}
+			
 		System.out.println("Login successful!");
 		scan.close();
-		return;
 	}
 
-	public static void newUser() throws IOException {
-		File userData = new File("userData.txt");
-		PrintWriter print = new PrintWriter(userData);
+	public static void newUser(FileWriter writeData, File userData) throws Exception {
+		PrintWriter out = new PrintWriter(userData);
 		Scanner read = new Scanner(userData);
+		boolean registered = false;
 		
-		System.out.println("Enter a username: ");
-		String username = scan.next();
+		while (registered == false) {
+			System.out.print("Username: ");
+			String username = scan.next();
+			
+			if (userData.length() == 0) {
+				out.print(username + " ");
+				break;
+			}
+			innerloop:
+			while (scan.hasNextLine()) {
+				String temp_user = read.next();		
+				if (temp_user == username) {
+					System.out.println("Username already exists, please try again.\n");
+					break innerloop;
+				}
+				else { out.print(username + " "); }
+			}
+		}
 		
-		//do {
-			//if (read.nextLine() == username) {
-			//	System.out.println("Username already exists, please try again");
-			//}
-			//else {
-				print.print(username);
-			//}
-	//	} while (read.hasNextLine());
-		
-		//System.out.println("Enter a username: ");
-		//String password = scan.nextLine();
-		
-		
-		
-		System.out.println("New user created!");
-		scan.close();
-		print.close();
+		System.out.print("Password: ");
+		String password = scan.next();
+		out.println(password);
+	
 		read.close();
-		return;
+		scan.close();
+		out.close();
 	}
 }
