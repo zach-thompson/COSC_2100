@@ -1,15 +1,15 @@
 package assignment_1;
 
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.io.*;
+
 /*
 * COSC_2100 - Fall 2022
 * Assignment_1 (Due 9/21/22)
 * Description: 
 * Author: Zach Thompson
 */
-
-import java.util.Scanner;
-import java.util.Stack;
-import java.io.*;
 
 public class main {
 	public static Scanner scan = new Scanner(System.in);
@@ -52,34 +52,51 @@ public class main {
 		return input;
 	}
 	
-	public static void login(File userData) throws FileNotFoundException {
-		boolean match = false;
+	public static void login(File userData) {
+		Scanner read = null;
+		try {
+			read = new Scanner(userData);
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found.");
+			e.printStackTrace();
+		}
 		
+		if (userData.length() == 0) {
+			System.out.println("Please create an account before logging in.");
+			return;
+		}
+		
+		boolean match = false;
+		String temp = null;
 		while (match == false) {
 			System.out.print("Username: ");
 			String username = scan.next();
+			read.reset();
+			innerloop:
+			try {
+			while(read.hasNextLine() == true) {
+				temp = read.next();
+				if (temp.contains(username)) {
+					break innerloop;
+					}
+				}
+			} catch (NoSuchElementException e) { System.out.println("Bounds exception"); }
 			
-			while (scan.hasNextLine()) {
-				String temp = scan.next();			
-				if (temp == username) {
-					System.out.print("Password: ");
-					String password = scan.next();
-					temp = scan.next();			
-					if (temp == password) {
-						match = true;
-					}
-					else {
-						System.out.println("Username and password don't match. Please try again.\n");
-					}
-				}
+			System.out.print("Password: ");
+			String password = scan.next();
+			temp = read.next();
+			if (temp.contains(password)) {
+				match = true;
+				break;
 			}
-			if (match == false) {
-				System.out.println("Username not found. Please try again.\n");
-				}
+			else {
+				System.out.println("Username and password don't match. Please try again.\n");
+			}
 		}
 			
 		System.out.println("Login successful!");
 		scan.close();
+		read.close();
 	}
 
 	public static void newUser(FileWriter writeData, File userData) throws Exception {
@@ -109,6 +126,7 @@ public class main {
 		System.out.print("Password: ");
 		String password = scan.next();
 		out.println(password);
+		System.out.print("Registration successful!");
 	
 		read.close();
 		scan.close();
