@@ -1,6 +1,5 @@
 package assignment_1;
 
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.io.*;
 
@@ -12,35 +11,34 @@ import java.io.*;
 */
 
 public class main {
-	public static Scanner scan = new Scanner(System.in);
+	public static Scanner scan = new Scanner(System.in); // initialize global scanner for all methods
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("Welcome to Zach's login simulator\n");
 		
-		FileWriter writeData = new FileWriter("userData.txt", true);
-		File userData = new File ("userData.txt");
+		FileWriter file = new FileWriter("userData.txt", true); // initialize FileWriter to create file with append permissions
 		
 		switch (getUserType()) { // calls getUserType which returns a 1 or 2
 		case 1:
-			login(userData);
+			login(); // calls login function
 			break;
 		case 2:
-			newUser(writeData, userData);
+			newUser(file); // calls newUser function, passing the log file as an argument
 			break;
 		}
 		
-		writeData.close();
+		scan.close();
 		return;
 	}
 	
-	public static int getUserType() {
+	public static int getUserType() { // reads and error checks user input
 		int input = 0;
 		
 		while (!(input == 1 || input == 2)) {
 			System.out.print("Enter 1 to log in as an existing user - Enter 2 to create a new user: ");
 			if (!scan.hasNextInt()) {
 				System.out.println("Invalid response, please try again.\n");
-				scan.nextLine();
+				scan.next();
 			}
 			else {
 				input = scan.nextInt();
@@ -52,7 +50,8 @@ public class main {
 		return input;
 	}
 	
-	public static void login(File userData) {
+	public static void login() throws FileNotFoundException {
+		File userData = new File("userData.txt");
 		Scanner read = null;
 		try {
 			read = new Scanner(userData);
@@ -66,62 +65,74 @@ public class main {
 			return;
 		}
 		
-		boolean match = false;
 		String temp = null;
-		while (match == false) {
+		while (read.hasNext()) {
 			System.out.print("Username: ");
 			String username = scan.next();
-			read.reset();
-			innerloop:
-			try {
-			while(read.hasNextLine() == true) {
-				temp = read.next();
+			
+			while(read.hasNext()) {
+				temp = read.nextLine();
+				
 				if (temp.contains(username)) {
-					break innerloop;
+					System.out.print("Password: ");
+					String password = scan.next();
+					
+					if (temp.contains(password)) {
+						System.out.println("Login successful!");
+						read.close();
+						return;
+					}
+					else {
+						System.out.println("Username and password don't match. Please try again.\n");
+						read.close();
+						return;
 					}
 				}
-			} catch (NoSuchElementException e) { System.out.println("Bounds exception"); }
-			
-			System.out.print("Password: ");
-			String password = scan.next();
-			temp = read.next();
-			if (temp.contains(password)) {
-				match = true;
-				break;
-			}
-			else {
-				System.out.println("Username and password don't match. Please try again.\n");
+				else {
+					System.out.println("Username not found, please try again");
+					read.close();
+					return;
+				}
 			}
 		}
-			
-		System.out.println("Login successful!");
-		scan.close();
-		read.close();
 	}
 
-	public static void newUser(FileWriter writeData, File userData) throws Exception {
-		PrintWriter out = new PrintWriter(userData);
+	public static void newUser(FileWriter file) throws Exception {
+		PrintWriter out = new PrintWriter(file);
+		File userData = new File("userData.txt");
 		Scanner read = new Scanner(userData);
-		boolean registered = false;
 		
-		while (registered == false) {
+		boolean unique = false;
+		String username = "";
+		String temp_user = "";
+		
+		while (unique == false) {
+			read.reset();
 			System.out.print("Username: ");
-			String username = scan.next();
+			username = scan.next();
 			
+			boolean flag = false;
 			if (userData.length() == 0) {
 				out.print(username + " ");
 				break;
 			}
-			innerloop:
-			while (scan.hasNextLine()) {
-				String temp_user = read.next();		
-				if (temp_user == username) {
-					System.out.println("Username already exists, please try again.\n");
-					break innerloop;
+			else { System.out.println(username);
+				while (read.hasNext() && flag == false) {
+					temp_user = read.nextLine();
+					if (temp_user.contains(username)) {
+						flag = true;
+					}
 				}
-				else { out.print(username + " "); }
+				if (flag == true) {
+					System.out.println("Username already exists, please try again.\n");
+				}
+				else {
+					unique = true;
+				}
 			}
 		}
+		
+		out.print(username + " ");
 		
 		System.out.print("Password: ");
 		String password = scan.next();
@@ -129,7 +140,6 @@ public class main {
 		System.out.print("Registration successful!");
 	
 		read.close();
-		scan.close();
 		out.close();
 	}
 }
