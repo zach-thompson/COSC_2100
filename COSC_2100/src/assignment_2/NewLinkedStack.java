@@ -69,8 +69,13 @@ public class NewLinkedStack<T> implements NewStackInterface<T>
 	
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		LLNode<T> temp = top;
+		int count = 0;
+		while (temp != null) {
+			count++;
+			temp = temp.link;
+		}
+		return count;
 	}
 
 }
