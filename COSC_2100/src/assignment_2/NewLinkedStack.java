@@ -51,20 +51,43 @@ public class NewLinkedStack<T> implements NewStackInterface<T>
 	
 	@Override
 	public void popFromBottom() throws StackUnderflowException {
-		// TODO Auto-generated method stub
-
+		if (isEmpty()) {
+			throw new StackUnderflowException("Top attempted on an empty stack.");
+		}
+		
+		LLNode<T> temp = top;
+		LLNode<T> next = top;
+		while (temp.link != null) {
+			next = temp;
+			temp = temp.link;
+		}
+		next.setLink(null);
 	}
 	
 	@Override
 	public T bottom() throws StackUnderflowException {
-		// TODO Auto-generated method stub
-		return null;
+		if (isEmpty()) {
+			throw new StackUnderflowException("Top attempted on an empty stack.");
+		}
+		
+		LLNode<T> temp = top;
+		LLNode<T> next = top;
+		while (temp.link != null) {
+			next = temp;
+			temp = temp.link;
+		}
+		return next.getInfo(); 
 	}
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub	
-		return null;
+		String result = "";
+        LLNode<T> base = top;
+        while(base.link != null){
+            result += base.getInfo() + "\n\t";
+            base = base.link;
+        }
+        return "Top --> " + result;
 	}
 	
 	@Override
