@@ -1,5 +1,13 @@
 package assignment_2;
 
+/*
+ * COSC 2100 - Fall '22
+ * Assignment #2
+ * Author: Zach Thompson
+ * Description: Contains definitions for most methods used in main.c for this assignment
+ * Methods not included: getNum, getMax - supplementary methods in main.c to make the main function clearer
+ */
+
 public class NewLinkedStack<T> implements NewStackInterface<T>
 {
 	protected LLNode<T> top;   // reference to the top of this stack
