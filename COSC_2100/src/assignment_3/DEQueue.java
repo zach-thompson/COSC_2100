@@ -31,27 +31,94 @@ public class DEQueue<T> implements DequeInterface<T> {
 	}
 
 	public void enqueueFront(T element) {
-		//TODO(1) Implement this method to add element to the front	
-
+		DLLNode<T> temp = new DLLNode<T>(element);
+		
+		if (isEmpty()) {
+			front = rear = temp;
+		}
+		else {
+			temp.setForward(front);
+			front.setBack(temp);
+			front = temp;
+		}
+		numElements++;
 	}
 
 	public void enqueueRear(T element) {
-		//TODO(2) Implement this method to add element to the rear
-
+		DLLNode<T> temp = new DLLNode<T>(element);
+		
+		if (isEmpty()) {
+			front = rear = temp;
+		}
+		else {
+			temp.setBack(rear);
+			rear.setForward(temp);
+			rear = temp;
+		}
+		numElements++;
 	}
 
 	public T dequeueFront() throws QueueUnderflowException {
-		//TODO(3) Implement this method to remove element from the front
-		return null;
+		DLLNode<T> temp = front;
+		
+		if (isEmpty()) {
+			throw new QueueUnderflowException();
+		}
+		
+		if (numElements == 1) {
+			front = rear = null;
+		}
+	    else {
+	        front = front.getForward();
+	        front.setBack(null);
+	    	}
+		
+		numElements--;
+		return temp.getInfo();
 	}
 
 	public T dequeueRear() throws QueueUnderflowException {
-		//TODO(4) Implement this method to remove element from the rear
-		return null;
+		DLLNode<T> temp = rear;
+		
+		if (isEmpty()) {
+			throw new QueueUnderflowException();
+		}
+		
+		if (numElements == 1) {
+			front = rear = null;
+		}
+	    else {
+	        rear = rear.getBack();
+	        rear.setForward(null);
+	    	}
+		
+		numElements--;
+		return temp.getInfo();
 	}
 
 	public String toString() {
-		//TODO(5) Implement this method to print a nicely formatted deque
-		return null;
+		String queue = "";
+		DLLNode<T> temp = front;
+		
+		if (isEmpty()) {
+			throw new QueueUnderflowException("Nothing to print");
+		}
+		
+		// if there's only one element in the queue
+		if (temp.getForward() == null) {
+			queue = temp.getInfo() + "";
+			return queue;
+		}
+		
+		while (temp != null) {
+			if (temp.getForward() == null) {
+				queue += temp.getInfo();
+			}
+			else {
+				queue += temp.getInfo() + "<-->";
+			}
+			temp = temp.getForward();
+		}
+		return queue;
 	}
 }
